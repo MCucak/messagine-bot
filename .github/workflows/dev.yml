@@ -3,7 +3,8 @@ name: Deploy dev branches
 on:
   push:
     branches:
-      - 'feature-**'
+      - '**'
+      - '!master'
     paths-ignore:
       - '**.md'
 
