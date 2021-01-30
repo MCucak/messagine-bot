@@ -65,8 +65,6 @@ async function botUtils() {
 async function localBot() {
   debug('Bot is running in development mode');
 
-  bot.telegram.webhookReply = false;
-
   const botInfo = await bot.telegram.getMe();
 
   // tslint:disable-next-line: no-console
@@ -147,16 +145,17 @@ function checkCommands(existingCommands: BotCommand[]) {
 }
 
 export async function webhook(event: any) {
-  bot.telegram.webhookReply = true;
-
-  const webHookUrl = getWebhookUrl();
-  bot.webhookCallback(webHookUrl);
-
   // call bot commands and middlware
   await botUtils();
 
   const body = JSON.parse(event.body);
-  await bot.launch();
+  const launchOptions: Telegraf.LaunchOptions = {
+    webhook: {
+      domain: config.ENDPOINT_URL,
+      hookPath: config.WEBHOOK_PATH,
+    },
+  };
+  await bot.launch(launchOptions);
   await bot.handleUpdate(body);
   return ok('Success');
 }
