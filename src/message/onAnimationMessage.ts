@@ -1,11 +1,12 @@
 import Debug from 'debug';
-import { TelegrafContext } from 'telegraf/typings/context';
+// import { Context as TelegrafContext } from 'telegraf';
 import { getOpponentChatIds } from '../lib/common';
 import { findExistingChat } from '../lib/dataHandler';
 import resource from '../resource';
 const debug = Debug('message:on_animation');
 
-const onAnimationMessage = () => async (ctx: TelegrafContext) => {
+// TODO: animation could not be extracted from TelegrafContext
+const onAnimationMessage = () => async (ctx: any) => {
   debug('Triggered "on_animation" message.');
 
   const chatId = ctx.chat?.id;
@@ -14,12 +15,12 @@ const onAnimationMessage = () => async (ctx: TelegrafContext) => {
     return await ctx.reply(resource.CHATID_NOT_FOUND);
   }
 
-  const messageAnimation = ctx.message?.animation;
-  if (!messageAnimation) {
+  if (!(ctx?.message && 'animation' in ctx?.message)) {
     debug('Message animation not found.');
     return await ctx.reply('Message animation not found.');
   }
 
+  const messageAnimation = ctx.message.animation;
   const existingChat = await findExistingChat(chatId);
   if (!existingChat) {
     debug(resource.CHAT_NOT_EXIST);

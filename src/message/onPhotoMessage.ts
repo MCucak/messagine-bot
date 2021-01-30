@@ -1,5 +1,5 @@
 import Debug from 'debug';
-import { TelegrafContext } from 'telegraf/typings/context';
+import { Context as TelegrafContext } from 'telegraf';
 import { getOpponentChatIds } from '../lib/common';
 import { findExistingChat } from '../lib/dataHandler';
 import resource from '../resource';
@@ -14,12 +14,12 @@ const onPhotoMessage = () => async (ctx: TelegrafContext) => {
     return await ctx.reply(resource.CHATID_NOT_FOUND);
   }
 
-  const messagePhoto = ctx.message?.photo;
-  if (!messagePhoto) {
+  if (!(ctx?.message && 'photo' in ctx?.message)) {
     debug('Message photo not found.');
     return await ctx.reply('Message photo not found.');
   }
 
+  const messagePhoto = ctx.message.photo;
   const photoSize = messagePhoto.length;
   const biggestPhoto = messagePhoto[photoSize - 1];
 

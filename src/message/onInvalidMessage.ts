@@ -1,5 +1,5 @@
 import Debug from 'debug';
-import { TelegrafContext } from 'telegraf/typings/context';
+import { Context as TelegrafContext } from 'telegraf';
 const debug = Debug('message:on_invalid');
 
 const onInvalidMessage = (type: string) => async (ctx: TelegrafContext) => {

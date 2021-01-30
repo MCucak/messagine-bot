@@ -1,5 +1,5 @@
 import Debug from 'debug';
-import { TelegrafContext } from 'telegraf/typings/context';
+import { Context as TelegrafContext } from 'telegraf';
 import { getOpponentChatIds } from '../lib/common';
 import { findExistingChat } from '../lib/dataHandler';
 import resource from '../resource';
@@ -14,12 +14,12 @@ const onLocationMessage = () => async (ctx: TelegrafContext) => {
     return await ctx.reply(resource.CHATID_NOT_FOUND);
   }
 
-  const messageLocation = ctx.message?.location;
-  if (!messageLocation) {
+  if (!(ctx?.message && 'location' in ctx?.message)) {
     debug('Message location not found.');
     return await ctx.reply('Message location not found.');
   }
 
+  const messageLocation = ctx.message.location;
   const existingChat = await findExistingChat(chatId);
   if (!existingChat) {
     debug(resource.CHAT_NOT_EXIST);

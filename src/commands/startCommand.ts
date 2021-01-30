@@ -1,5 +1,5 @@
 import Debug from 'debug';
-import { TelegrafContext } from 'telegraf/typings/context';
+import { Context as TelegrafContext } from 'telegraf';
 import commandEnum from '../lib/commandEnum';
 import { getLanguage } from '../lib/common';
 import { addUser, getUser } from '../lib/dataHandler';

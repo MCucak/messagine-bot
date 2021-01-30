@@ -1,5 +1,5 @@
 import Debug from 'debug';
-import Telegraf, { Context as TelegrafContext, Extra } from 'telegraf';
+import { Context as TelegrafContext, Telegraf } from 'telegraf';
 import { BotCommand } from 'telegraf/typings/telegram-types';
 import {
   cancelFindCommand,
@@ -63,12 +63,11 @@ async function botUtils() {
 }
 
 async function localBot() {
-  debug('Bot is running in development mode at http://localhost:3000');
+  debug('Bot is running in development mode');
 
-  bot.webhookReply = false;
+  bot.telegram.webhookReply = false;
 
   const botInfo = await bot.telegram.getMe();
-  bot.options.username = botInfo.username;
 
   // tslint:disable-next-line: no-console
   console.info('Server has initialized bot username: ', botInfo.username);
@@ -143,29 +142,15 @@ function checkCommands(existingCommands: BotCommand[]) {
 }
 
 export async function webhook(event: any) {
-  bot.webhookReply = true;
+  bot.telegram.webhookReply = true;
   // call bot commands and middlware
   await botUtils();
 
   const body = JSON.parse(event.body);
+  await bot.launch();
   await bot.handleUpdate(body);
   return ok('Success');
 }
-
-export function toArgs(ctx: TelegrafContext) {
-  const regex = /^\/([^@\s]+)@?(?:(\S+)|)\s?([\s\S]+)?$/i;
-  const parts = regex.exec(ctx.message!.text!.trim());
-  if (!parts) {
-    return [];
-  }
-  return !parts[3] ? [] : parts[3].split(/\s+/).filter(arg => arg.length);
-}
-
-export const MARKDOWN = Extra.markdown(true);
-
-export const NO_PREVIEW = MARKDOWN.webPreview(false);
-
-export const hiddenCharacter = '\u200b';
 
 export const logger = async (_: TelegrafContext, next: any): Promise<void> => {
   const logStart = new Date();

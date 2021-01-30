@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { TelegrafContext } from 'telegraf/typings/context';
+import { Context as TelegrafContext } from 'telegraf';
 import * as languageFile from '../../languages.json';
 import config from '../config';
 import { IChat } from './models/Chat';
