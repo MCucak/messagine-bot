@@ -87,15 +87,8 @@ export async function status() {
 }
 
 async function syncWebhook() {
-  if (!config.ENDPOINT_URL) {
-    throw new Error('ENDPOINT_URL is not set.');
-  }
-  if (!config.WEBHOOK_PATH) {
-    throw new Error('WEBHOOK_PATH is not set.');
-  }
-
   const getWebhookInfo = await bot.telegram.getWebhookInfo();
-  const expectedWebhookUrl = `${config.ENDPOINT_URL}/${config.WEBHOOK_PATH}`;
+  const expectedWebhookUrl = getWebhookUrl();
 
   if (getWebhookInfo.url !== expectedWebhookUrl) {
     debug(`deleting webhook`);
@@ -103,6 +96,18 @@ async function syncWebhook() {
     debug(`setting webhook to ${expectedWebhookUrl}`);
     await bot.telegram.setWebhook(expectedWebhookUrl);
   }
+}
+
+function getWebhookUrl(): string {
+  if (!config.ENDPOINT_URL) {
+    throw new Error('ENDPOINT_URL is not set.');
+  }
+  if (!config.WEBHOOK_PATH) {
+    throw new Error('WEBHOOK_PATH is not set.');
+  }
+
+  const webhookUrl = `${config.ENDPOINT_URL}/${config.WEBHOOK_PATH}`;
+  return webhookUrl;
 }
 
 async function syncCommands() {
@@ -143,6 +148,10 @@ function checkCommands(existingCommands: BotCommand[]) {
 
 export async function webhook(event: any) {
   bot.telegram.webhookReply = true;
+
+  const webHookUrl = getWebhookUrl();
+  bot.webhookCallback(webHookUrl);
+
   // call bot commands and middlware
   await botUtils();
 
