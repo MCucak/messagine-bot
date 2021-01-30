@@ -144,19 +144,17 @@ function checkCommands(existingCommands: BotCommand[]) {
   return true;
 }
 
-export async function webhook(event: any) {
+export async function webhook(_event: any) {
+  bot.telegram.webhookReply = true;
+
   // call bot commands and middlware
   await botUtils();
 
-  const body = JSON.parse(event.body);
-  const launchOptions: Telegraf.LaunchOptions = {
-    webhook: {
-      domain: config.ENDPOINT_URL,
-      hookPath: config.WEBHOOK_PATH,
-    },
-  };
-  await bot.launch(launchOptions);
-  await bot.handleUpdate(body);
+  // const body = JSON.parse(event.body);
+  const webhookUrl = getWebhookUrl();
+  bot.webhookCallback(webhookUrl);
+  // await bot.launch(launchOptions);
+  // await bot.handleUpdate(body);
   return ok('Success');
 }
 
